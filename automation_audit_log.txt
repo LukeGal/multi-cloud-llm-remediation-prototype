@@ -1,0 +1,22 @@
+=== NEW TESTING RUN INITIALIZED AT 2026-08-26 22:08:59 ===
+[2026-08-26 22:10:51] [INCIDENT_START] AWS confirmed remediation threshold breach at telemetry timestamp 2026-08-26 22:10:04.
+[2026-08-26 22:10:51] [HEALING_INITIATED] Remediation threshold breach on AWS (-1.0ms). Attempt 1 of 1. Processing alert pipeline.
+[2026-08-26 22:12:47] [HEALING_SUCCESS] AWS node fully cycled. Total Lifecycle Time: 110.8s
+[2026-08-26 22:12:47] [TELEMETRY_BACKLOG_FLUSHED] Post-remediation telemetry cursor advanced to row 35 after AWS recovery.
+[2026-08-26 22:13:40] [RECOVERY_TIME] AWS incident recovery time: 215.00s (breach=2026-08-26 22:10:04, recovery=2026-08-26 22:13:39).
+[2026-08-26 22:13:40] [RECOVERY_VERIFIED] AWS application recovery verified: HTTP=200, latency=110.31ms, threshold=153.01ms.
+=== NEW TESTING RUN INITIALIZED AT 2026-08-26 22:19:27 ===
+[2026-08-26 22:21:04] [INCIDENT_START] AWS confirmed remediation threshold breach at telemetry timestamp 2026-08-26 22:20:54.
+[2026-08-26 22:21:05] [HEALING_INITIATED] Remediation threshold breach on AWS (-1.0ms). Attempt 1 of 1. Processing alert pipeline.
+[2026-08-26 22:26:52] [HEALING_SUCCESS] AWS node fully cycled. Total Lifecycle Time: 325.52s
+[2026-08-26 22:26:52] [TELEMETRY_BACKLOG_FLUSHED] Post-remediation telemetry cursor advanced to row 65 after AWS recovery.
+[2026-08-26 22:27:31] [RECOVERY_TIME] AWS incident recovery time: 396.00s (breach=2026-08-26 22:20:54, recovery=2026-08-26 22:27:30).
+[2026-08-26 22:27:31] [RECOVERY_VERIFIED] AWS application recovery verified: HTTP=200, latency=110.65ms, threshold=153.01ms.
+=== NEW TESTING RUN INITIALIZED AT 2026-08-26 22:29:01 ===
+[2026-08-26 22:30:27] [INCIDENT_START] AZURE confirmed remediation threshold breach at telemetry timestamp 2026-08-26 22:30:13.
+[2026-08-26 22:30:27] [HEALING_INITIATED] Remediation threshold breach on AZURE (5372.26ms). Attempt 1 of 1. Processing alert pipeline.
+[2026-08-26 22:34:54] [HEALING_SUCCESS] Azure node provisioned via Hybrid CLI-Import vector. Time: 246.6s
+[2026-08-26 22:34:54] [TELEMETRY_BACKLOG_FLUSHED] Post-remediation telemetry cursor advanced to row 151 after AZURE recovery.
+[2026-08-26 22:34:57] [SAFETY_GATE_REJECTION] Rejected DESTROY_AZURE: telemetry does not confirm a breach (HTTP=200, latency=132.34ms, threshold=299.73ms).
+[2026-08-26 22:34:58] [RECOVERY_TIME] AZURE incident recovery time: 285.00s (breach=2026-08-26 22:30:13, recovery=2026-08-26 22:34:58).
+[2026-08-26 22:34:58] [RECOVERY_VERIFIED] AZURE application recovery verified: HTTP=200, latency=139.57ms, threshold=172.35ms.

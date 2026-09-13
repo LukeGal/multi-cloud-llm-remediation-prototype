@@ -1,0 +1,7 @@
+.terraform/
+*.tfstate
+*.tfstate.*
+apikey.txt
+jmeter.log
+__pycache__/
+*.pyc
