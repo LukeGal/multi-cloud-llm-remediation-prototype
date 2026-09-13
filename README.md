@@ -1,175 +1,184 @@
+# Multi-Cloud LLM Remediation Prototype
+
 This prototype was developed as part of a Bachelor of Science (Honours) in Computer Systems and Networks dissertation, which evaluates a localised, open-weight Large Language Model (LLM) for remediation across Amazon Web Services (AWS), Microsoft Azure, and Google Cloud Platform (GCP).
-
-
 
 The system constantly monitors cloud endpoint telemetry, including HTTP status and response latency. The telemetry is fed to a locally hosted LLM, which classifies the current infrastructure state and may recommend provider-specific remediation.
 
-
-
 The LLM itself does not directly control the cloud infrastructure. A Python orchestration layer checks its recommendation against deterministic safety conditions before allowing any infrastructure action.
-
-
 
 When remediation is approved, provider-specific Terraform actions reprovision the affected cloud node. AWS and GCP used scoped Terraform re-provisioning, while Azure used a hybrid Terraform and CLI process. The system then continues monitoring the affected endpoint until recovery has been validated.
 
-
-
 Apache JMeter was used to perform stress tests on the prototype, while Mean Time to Remediate (MTTR) was used to examine remediation performance.
 
+---
 
+## The prototype requires the following software:
 
-The prototype requires the following software:
+- Python 3
+- Terraform
+- Apache JMeter
+- Ollama
 
+## The following cloud platforms were used:
 
-Python 3
+- Amazon Web Services (AWS)
+- Microsoft Azure
+- Google Cloud Platform (GCP)
 
-Terraform
+## The local LLM that the prototype uses is:
 
-Apache JMeter
-
-Ollama
-
-
-The following cloud platforms were used:
-
-Amazon Web Services (AWS)
-
-Microsoft Azure
-
-Google Cloud Platform (GCP)
-
-
-
-The local LLM that the prototype uses is:
-
-Qwen2.5-Coder 7B
+**Qwen2.5-Coder 7B**
 
 This model is executed locally via Ollama.
 
 Before starting the ‘production_orchestrator.py’ file, please make sure that Ollama is installed and the required model is available locally.
 
+### Example:
 
-
-Example:
-
+```text
 “ollama pull qwen2.5-coder:7b”
+```
 
+---
 
-Main Prototype Components
-main.tf
+## Main Prototype Components
+
+### main.tf
 
 Contains the Terraform configuration used to provision and manage the multi-cloud infrastructure.
 
-variables.tf
+### variables.tf
 
 Contains Terraform variable definitions required by the infrastructure configuration.
 
-benchmark.py
+### benchmark.py
 
 Continuously sends requests to the AWS, Azure, and GCP endpoints and records telemetry including:
 
-Timestamp
-HTTP status
-Response latency
+- Timestamp
+- HTTP status
+- Response latency
 
 The generated telemetry is written to a CSV file and is used by the orchestration system.
 
-production_orchestrator.py
+### production_orchestrator.py
 
 Implements the main closed-loop remediation process.
 
-The orchestrator:
+### The orchestrator:
 
-Reads the latest cloud telemetry.
-Sends the telemetry context to the local LLM.
-Receives a constrained classification from the LLM.
-Validates the recommendation using deterministic safety checks.
-Checks the configured remediation threshold.
-Applies provider-specific remediation where appropriate.
-Monitors the affected endpoint following remediation.
-Confirms recovery only after the configured recovery criteria are satisfied.
-Records remediation and recovery events in the audit log.
+- Reads the latest cloud telemetry.
+- Sends the telemetry context to the local LLM.
+- Receives a constrained classification from the LLM.
+- Validates the recommendation using deterministic safety checks.
+- Checks the configured remediation threshold.
+- Applies provider-specific remediation where appropriate.
+- Monitors the affected endpoint following remediation.
+- Confirms recovery only after the configured recovery criteria are satisfied.
+- Records remediation and recovery events in the audit log.
 
 The LLM produces classification outputs such as:
 
+```text
 CLEAR
 DESTROY_AWS
 DESTROY_AZURE
 DESTROY_GCP
+```
 
 These values are internal recommendations only and are not direct Terraform commands.
 
-stress_test.py
+### stress_test.py
 
 Contains the earlier Python-based stress-testing implementation used during prototype development.
 
-TriCloud_Baseline.jmx
+### TriCloud_Baseline.jmx
 
 Apache JMeter test configuration used to generate controlled workloads against the three cloud endpoints.
 
-automation_audit_log.txt
+### automation_audit_log.txt
 
 Contains recorded events from the automated remediation workflow, including threshold breaches, safety-gate decisions, circuit-breaker events, remediation actions, and successful recovery events.
 
-Test Results
+### Test Results
 
 Contains experimental output collected during prototype testing.
 
-Basic Execution Order
+---
+
+## Basic Execution Order
 
 A typical execution sequence is:
 
-1. Configure cloud credentials
+### 1. Configure cloud credentials
 
 Configure valid credentials for AWS, Azure, and GCP using the appropriate provider tools or environment configuration.
 
 Credentials are not included with this submission.
 
-2. Initialise Terraform
+### 2. Initialise Terraform
+
+```text
 terraform init
-3. Review the Terraform configuration
+```
+
+### 3. Review the Terraform configuration
+
+```text
 terraform plan
-4. Provision the infrastructure
+```
+
+### 4. Provision the infrastructure
+
+```text
 terraform apply
-5. Configure the active cloud endpoints
+```
+
+### 5. Configure the active cloud endpoints
 
 Update the endpoint configuration using the public addresses of the provisioned AWS, Azure, and GCP resources.
 
-6. Start Ollama
+### 6. Start Ollama
 
 Ensure the local Ollama service and Qwen2.5-Coder 7B model are available.
 
-7. Start telemetry monitoring
+### 7. Start telemetry monitoring
+
+```text
 python benchmark.py
+```
 
 This begins collecting cloud endpoint response latency and HTTP status information.
 
-8. Start the remediation orchestrator
+### 8. Start the remediation orchestrator
 
 In a separate terminal:
 
+```text
 python production_orchestrator.py
+```
 
 The orchestrator monitors the telemetry generated by benchmark.py.
 
-9. Run the JMeter workload
+### 9. Run the JMeter workload
 
 Open the supplied JMeter .jmx test plan or execute it using JMeter in non-GUI mode.
 
 The workload generates HTTP traffic against the three cloud endpoints while the telemetry and remediation systems remain active.
 
-10. Review the results
+### 10. Review the results
 
 Following testing, review:
 
-Telemetry CSV files
-automation_audit_log.txt
-JMeter results
-Recovery events
-MTTR measurements
+- Telemetry CSV files
+- automation_audit_log.txt
+- JMeter results
+- Recovery events
+- MTTR measurements
 
+---
 
-Safety Mechanisms
+## Safety Mechanisms
 
 The prototype deliberately separates LLM recommendations from infrastructure execution.
 
@@ -179,8 +188,9 @@ Before remediation is permitted, the Python orchestration layer independently ch
 
 The prototype also includes a circuit-breaker mechanism to prevent repeated remediation cycles after the configured remediation allowance has been reached.
 
+---
 
-Recovery Validation
+## Recovery Validation
 
 Terraform completion alone is not treated as successful recovery.
 
@@ -188,29 +198,31 @@ Following remediation, the affected endpoint continues to be monitored.
 
 Recovery is only confirmed when:
 
-The endpoint returns HTTP 200.
-Response latency returns within the configured recovery threshold.
-The healthy condition is observed for two consecutive telemetry samples.
+- The endpoint returns HTTP 200.
+- Response latency returns within the configured recovery threshold.
+- The healthy condition is observed for two consecutive telemetry samples.
 
 This ensures that a temporary improvement is not incorrectly treated as a successful recovery.
 
+---
 
-Credentials and Sensitive Information
+## Credentials and Sensitive Information
 
 For security reasons, cloud credentials, API keys, secrets, authentication tokens, and other sensitive information have intentionally been removed from the submitted prototype files.
 
 Any person attempting to reproduce the prototype must configure their own:
 
-AWS credentials and resources
-Microsoft Azure credentials and resources
-GCP credentials and resources
-Cloud endpoint addresses
-Any required notification-service credentials
+- AWS credentials and resources
+- Microsoft Azure credentials and resources
+- GCP credentials and resources
+- Cloud endpoint addresses
+- Any required notification-service credentials
 
 No valid private credentials are required to understand or review the submitted source code.
 
+---
 
-Notes
+## Notes
 
 This prototype was developed as a controlled experimental system and is not intended to represent a production-ready enterprise remediation platform.
 
